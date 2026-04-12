@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Flowshift — KI-Automatisierung für Hotels & mehr</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0a0a0a; --paper: #f5f2eb; --paper2: #ede9e0;
+    --accent: #c8f03c; --accent2: #1a1a2e; --muted: #6b6560;
+    --border: rgba(10,10,10,0.12);
+    --serif: 'Instrument Serif', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --shadow-sm: 0 1px 2px rgba(10,10,10,0.04), 0 2px 8px rgba(10,10,10,0.03);
+    --shadow-md: 0 4px 12px rgba(10,10,10,0.06), 0 2px 4px rgba(10,10,10,0.04);
+    --shadow-lg: 0 8px 30px rgba(10,10,10,0.08), 0 4px 8px rgba(10,10,10,0.04);
+    color-scheme: light;
+  }
+  html { scroll-behavior: smooth; color-scheme: light; }
+  body { background: #f5f2eb !important; color: #0a0a0a !important; font-family: var(--sans); overflow-x: hidden; cursor: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  /* Custom cursor */
+  .cursor { position:fixed; width:10px; height:10px; background:var(--ink); border-radius:50%; pointer-events:none; z-index:9999; transition:transform 0.15s cubic-bezier(0.23,1,0.32,1), width 0.2s, height 0.2s; transform:translate(-50%,-50%); mix-blend-mode:exclusion; background:#fff; }
+  .cursor-ring { position:fixed; width:40px; height:40px; border:1.5px solid var(--ink); border-radius:50%; pointer-events:none; z-index:9998; transition:transform 0.35s cubic-bezier(0.23,1,0.32,1), opacity 0.3s, width 0.3s, height 0.3s; transform:translate(-50%,-50%); opacity:0.3; }
+
+  /* Nav - frosted glass */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1.2rem 3rem; background:rgba(245,242,235,0.8); backdrop-filter:blur(20px) saturate(1.2); -webkit-backdrop-filter:blur(20px) saturate(1.2); border-bottom:1px solid var(--border); transition:padding 0.3s ease, box-shadow 0.3s ease; }
+  nav.scrolled { padding:0.9rem 3rem; box-shadow:var(--shadow-sm); }
+  .logo { font-family:var(--sans); font-weight:800; font-size:1.25rem; letter-spacing:-0.03em; display:flex; align-items:center; gap:0.5rem; }
+  .logo-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; display:inline-block; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,240,60,0.4)} 50%{box-shadow:0 0 0 8px rgba(200,240,60,0)} }
+  .nav-right { display:flex; align-items:center; gap:1.5rem; }
+  nav a { font-family:var(--mono); font-size:0.75rem; color:var(--muted); text-decoration:none; letter-spacing:0.05em; transition:color 0.3s ease; position:relative; }
+  nav a:not(.nav-cta)::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:1px; background:var(--ink); transition:width 0.3s ease; }
+  nav a:not(.nav-cta):hover::after { width:100%; }
+  nav a:hover { color:var(--ink); }
+  .nav-cta { background:var(--ink) !important; color:var(--paper) !important; padding:0.55rem 1.3rem; border-radius:100px; font-family:var(--mono); font-size:0.72rem; letter-spacing:0.08em; transition:all 0.3s cubic-bezier(0.23,1,0.32,1) !important; }
+  .nav-cta:hover { background:var(--accent2) !important; transform:translateY(-1px); box-shadow:0 4px 12px rgba(10,10,10,0.15); }
+
+  .lang-toggle { display:flex; border:1.5px solid var(--border); border-radius:100px; overflow:hidden; }
+  .lang-btn { padding:0.35rem 0.7rem; background:transparent; border:none; cursor:none; color:var(--muted); font-family:var(--mono); font-size:0.68rem; letter-spacing:0.08em; transition:all 0.3s ease; }
+  .lang-btn.active { background:var(--ink); color:var(--paper); }
+
+  /* Hero */
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:flex-end; padding:0 3rem 5rem; position:relative; overflow:hidden; }
+  .hero-bg { position:absolute; top:0; left:0; right:0; bottom:0; z-index:0; overflow:hidden; }
+  .hero-grid { position:absolute; top:0; left:0; right:0; bottom:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:60px 60px; opacity:0.5; }
+  .hero-orb { position:absolute; border-radius:50%; filter:blur(100px); }
+  .orb1 { width:700px; height:700px; background:rgba(200,240,60,0.15); top:-150px; right:-150px; animation:drift1 12s ease-in-out infinite; }
+  .orb2 { width:500px; height:500px; background:rgba(26,26,46,0.06); bottom:50px; left:150px; animation:drift2 15s ease-in-out infinite; }
+  .orb3 { width:300px; height:300px; background:rgba(200,240,60,0.08); top:40%; left:60%; animation:drift3 18s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,50px) scale(1.05)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-40px) scale(0.95)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,30px)} }
+
+  .hero-label { font-family:var(--mono); font-size:0.7rem; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; margin-bottom:1.8rem; position:relative; z-index:1; opacity:0; animation:fadeUp 0.8s 0.2s ease forwards; display:flex; align-items:center; gap:0.8rem; }
+  .hero-label::before { content:''; width:24px; height:1px; background:var(--muted); }
+  .hero h1 { font-family:var(--serif); font-size:clamp(3.5rem,8vw,7.5rem); line-height:0.93; letter-spacing:-0.025em; position:relative; z-index:1; max-width:900px; opacity:0; animation:fadeUp 0.8s 0.4s ease forwards; }
+  .hero h1 em { font-style:italic; background:linear-gradient(135deg, var(--muted) 0%, #8a847e 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { font-family:var(--mono); font-size:0.88rem; color:var(--muted); max-width:500px; line-height:1.8; margin-top:2rem; position:relative; z-index:1; opacity:0; animation:fadeUp 0.8s 0.6s ease forwards; }
+  .hero-bottom { display:flex; align-items:flex-end; justify-content:space-between; margin-top:3.5rem; position:relative; z-index:1; opacity:0; animation:fadeUp 0.8s 0.8s ease forwards; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  .waitlist-form { display:flex; border:1.5px solid var(--ink); border-radius:100px; overflow:hidden; background:var(--paper); transition:box-shadow 0.3s ease; }
+  .waitlist-form:focus-within { box-shadow:0 0 0 3px rgba(200,240,60,0.3); }
+  .waitlist-form input { background:transparent; border:none; outline:none; padding:0.9rem 1.5rem; font-family:var(--mono); font-size:0.82rem; color:var(--ink); width:280px; }
+  .waitlist-form input::placeholder { color:var(--muted); }
+  .waitlist-form button { background:var(--ink); color:var(--paper); border:none; padding:0.9rem 1.8rem; font-family:var(--mono); font-size:0.75rem; letter-spacing:0.08em; cursor:none; transition:all 0.3s cubic-bezier(0.23,1,0.32,1); white-space:nowrap; border-radius:0 100px 100px 0; }
+  .waitlist-form button:hover { background:var(--accent2); letter-spacing:0.12em; }
+  .waitlist-form button.success { background:#2d7a2d; }
+
+  .hero-stats { display:flex; gap:3rem; }
+  .stat { text-align:right; }
+  .stat-num { font-family:var(--serif); font-size:2.2rem; font-style:italic; line-height:1; }
+  .stat-label { font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-top:0.3rem; }
+
+  /* Ticker */
+  .ticker { border-top:1px solid var(--border); border-bottom:1px solid var(--border); overflow:hidden; padding:1rem 0; background:var(--ink); }
+  .ticker-track { display:flex; animation:ticker 35s linear infinite; white-space:nowrap; }
+  .ticker-item { font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; padding:0 2.5rem; color:rgba(245,242,235,0.5); flex-shrink:0; transition:color 0.3s; }
+  .ticker-item span { color:var(--accent); margin-right:2.5rem; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* Sections — scroll reveal */
+  section { padding:7rem 3rem; }
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1); }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:0.1s; }
+  .reveal-delay-2 { transition-delay:0.2s; }
+  .reveal-delay-3 { transition-delay:0.3s; }
+
+  .section-label { font-family:var(--mono); font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:3.5rem; display:flex; align-items:center; gap:1rem; }
+  .section-label::after { content:''; height:1px; background:var(--border); flex:1; }
+
+  /* Service cards */
+  .services-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+  .service-card { background:var(--paper); padding:2.8rem 2.5rem; position:relative; overflow:hidden; transition:all 0.4s cubic-bezier(0.23,1,0.32,1); }
+  .service-card:hover { background:var(--paper2); transform:scale(1.01); }
+  .service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--accent) 0%, rgba(200,240,60,0.4) 100%); transform:scaleX(0); transition:transform 0.4s cubic-bezier(0.23,1,0.32,1); transform-origin:left; }
+  .service-card:hover::before { transform:scaleX(1); }
+  .service-num { font-family:var(--mono); font-size:0.62rem; color:var(--muted); letter-spacing:0.1em; margin-bottom:1.8rem; opacity:0.5; }
+  .service-icon { width:40px; height:40px; margin-bottom:1.5rem; color:var(--ink); transition:transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+  .service-card:hover .service-icon { transform:translateY(-2px); }
+  .service-card h3 { font-family:var(--serif); font-size:1.6rem; font-weight:400; margin-bottom:0.9rem; line-height:1.2; }
+  .service-card p { font-family:var(--mono); font-size:0.78rem; color:var(--muted); line-height:1.75; }
+  .service-tag { display:inline-block; margin-top:1.5rem; font-family:var(--mono); font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; background:var(--accent); color:var(--ink); padding:0.3rem 0.8rem; border-radius:100px; font-weight:500; }
+
+  /* How section */
+  .how-section { background:var(--ink); color:var(--paper); }
+  .how-section .section-label { color:rgba(245,242,235,0.4); }
+  .how-section .section-label::after { background:rgba(245,242,235,0.1); }
+  .how-grid { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
+  .how-left h2 { font-family:var(--serif); font-size:clamp(2.5rem,5vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin-bottom:1.8rem; }
+  .how-left h2 em { font-style:italic; color:var(--accent); }
+  .how-left p { font-family:var(--mono); font-size:0.85rem; color:rgba(245,242,235,0.45); line-height:1.85; max-width:420px; }
+  .steps { display:flex; flex-direction:column; border:1px solid rgba(245,242,235,0.08); border-radius:4px; overflow:hidden; }
+  .step { padding:2rem 2.2rem; border-bottom:1px solid rgba(245,242,235,0.08); display:flex; gap:1.5rem; align-items:flex-start; transition:all 0.4s cubic-bezier(0.23,1,0.32,1); }
+  .step:last-child { border-bottom:none; }
+  .step:hover { background:rgba(200,240,60,0.05); padding-left:2.6rem; }
+  .step-num { font-family:var(--mono); font-size:0.65rem; color:var(--accent); letter-spacing:0.1em; padding-top:0.2rem; flex-shrink:0; width:2rem; }
+  .step-content h4 { font-family:var(--sans); font-size:0.95rem; font-weight:600; margin-bottom:0.5rem; }
+  .step-content p { font-family:var(--mono); font-size:0.75rem; color:rgba(245,242,235,0.4); line-height:1.7; }
+
+  /* Proof / testimonials */
+  .proof-section { background:var(--paper2); }
+  .proof-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
+  .proof-card { background:var(--paper); border:1px solid var(--border); padding:2.5rem; position:relative; border-radius:4px; transition:all 0.4s cubic-bezier(0.23,1,0.32,1); }
+  .proof-card:hover { box-shadow:var(--shadow-md); transform:translateY(-3px); }
+  .proof-quote { font-family:var(--serif); font-size:1.2rem; font-style:italic; line-height:1.55; margin-bottom:1.8rem; position:relative; padding-top:1.5rem; }
+  .proof-quote::before { content:'\201C'; position:absolute; top:-0.2rem; left:0; font-size:3.5rem; color:var(--accent); font-family:var(--serif); line-height:1; opacity:0.7; }
+  .proof-author { font-family:var(--mono); font-size:0.72rem; color:var(--muted); letter-spacing:0.05em; }
+  .proof-author strong { display:block; color:var(--ink); font-size:0.78rem; margin-bottom:0.2rem; }
+  .proof-tag { position:absolute; top:1.8rem; right:1.8rem; background:var(--accent); color:var(--ink); font-family:var(--mono); font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.28rem 0.7rem; border-radius:100px; font-weight:500; }
+
+  /* Waitlist bottom */
+  .waitlist-section { background:var(--accent); text-align:center; padding:8rem 3rem; position:relative; overflow:hidden; }
+  .waitlist-section::before { content:''; position:absolute; top:-200px; right:-200px; width:500px; height:500px; background:rgba(255,255,255,0.15); border-radius:50%; filter:blur(100px); }
+  .waitlist-section::after { content:''; position:absolute; bottom:-150px; left:-150px; width:400px; height:400px; background:rgba(10,10,10,0.05); border-radius:50%; filter:blur(80px); }
+  .waitlist-section h2 { font-family:var(--serif); font-size:clamp(2.5rem,6vw,5rem); line-height:1; letter-spacing:-0.02em; color:var(--ink); margin-bottom:1.2rem; position:relative; z-index:1; }
+  .waitlist-section h2 em { font-style:italic; }
+  .waitlist-section > p { font-family:var(--mono); font-size:0.85rem; color:rgba(10,10,10,0.55); margin-bottom:2.8rem; position:relative; z-index:1; }
+  .waitlist-form-lg { display:flex; border:2px solid var(--ink); border-radius:100px; overflow:hidden; max-width:500px; margin:0 auto; background:var(--paper); position:relative; z-index:1; transition:box-shadow 0.3s ease; }
+  .waitlist-form-lg:focus-within { box-shadow:0 0 0 4px rgba(10,10,10,0.1); }
+  .waitlist-form-lg input { background:transparent; border:none; outline:none; padding:1.1rem 1.6rem; font-family:var(--mono); font-size:0.85rem; color:var(--ink); flex:1; }
+  .waitlist-form-lg input::placeholder { color:var(--muted); }
+  .waitlist-form-lg button { background:var(--ink); color:var(--paper); border:none; padding:1.1rem 2.2rem; font-family:var(--mono); font-size:0.78rem; letter-spacing:0.08em; cursor:none; transition:all 0.3s cubic-bezier(0.23,1,0.32,1); white-space:nowrap; border-radius:0 100px 100px 0; }
+  .waitlist-form-lg button:hover { background:var(--accent2); }
+  .waitlist-form-lg button.success { background:#2d7a2d; }
+  .waitlist-count { font-family:var(--mono); font-size:0.72rem; color:rgba(10,10,10,0.45); margin-top:1.2rem; position:relative; z-index:1; }
+  .waitlist-count b { color:var(--ink); }
+
+  /* Footer */
+  footer { background:var(--ink); color:var(--paper); padding:3rem 3rem; display:flex; align-items:center; justify-content:space-between; }
+  footer .logo { color:var(--paper); font-size:1rem; }
+  footer p { font-family:var(--mono); font-size:0.68rem; color:rgba(245,242,235,0.3); letter-spacing:0.05em; }
+
+  /* Responsive */
+  @media (max-width:768px) {
+    body { cursor:auto; font-size:15px; }
+    .cursor, .cursor-ring { display:none; }
+
+    nav { padding:1rem 1.25rem; }
+    nav.scrolled { padding:0.8rem 1.25rem; }
+    .nav-links { display:none !important; }
+    .lang-btn { cursor:pointer; }
+    .nav-cta { padding:0.45rem 0.9rem; font-size:0.68rem; }
+
+    .hero { padding:6rem 1.25rem 3rem; min-height:100svh; justify-content:flex-end; }
+    .hero-label { font-size:0.62rem; margin-bottom:1rem; }
+    .hero-label::before { width:16px; }
+    .hero h1 { font-size:clamp(2.4rem,10vw,3.2rem); line-height:1; }
+    .hero-sub { font-size:0.82rem; margin-top:1.2rem; max-width:100%; }
+    .hero-bottom { flex-direction:column; align-items:flex-start; gap:1.5rem; margin-top:2rem; }
+
+    .waitlist-form { flex-direction:column; width:100%; border-radius:8px; }
+    .waitlist-form input { width:100%; border-bottom:1px solid var(--border); font-size:1rem; padding:1rem; border-radius:0; }
+    .waitlist-form button { width:100%; padding:1rem; font-size:0.85rem; min-height:52px; cursor:pointer; border-radius:0 0 8px 8px; }
+
+    .hero-stats { gap:2rem; }
+    .stat { text-align:left; }
+    .stat-num { font-size:1.8rem; }
+
+    section { padding:3.5rem 1.25rem; }
+
+    .services-grid { grid-template-columns:1fr; border-radius:4px; }
+    .service-card { padding:1.75rem; }
+    .service-icon { width:32px; height:32px; }
+
+    .how-grid { grid-template-columns:1fr; gap:2.5rem; }
+    .how-section { padding:3.5rem 1.25rem; }
+    .step { padding:1.4rem 1.25rem; }
+    .step:hover { padding-left:1.25rem; }
+
+    .proof-grid { grid-template-columns:1fr; }
+    .proof-card { padding:1.5rem; padding-top:2.5rem; }
+    .proof-quote { font-size:1rem; }
+
+    .waitlist-section { padding:4rem 1.25rem; }
+    .waitlist-form-lg { flex-direction:column; max-width:100%; border-radius:8px; }
+    .waitlist-form-lg input { width:100%; font-size:1rem; padding:1rem 1.25rem; border-bottom:1px solid rgba(10,10,10,0.15); border-radius:0; }
+    .waitlist-form-lg button { width:100%; padding:1.1rem; font-size:0.85rem; min-height:54px; cursor:pointer; letter-spacing:0.06em; border-radius:0 0 8px 8px; }
+
+    footer { flex-direction:column; gap:1rem; text-align:center; padding:2rem 1.25rem; }
+    footer p:last-child { display:none; }
+
+    .reveal { opacity:1; transform:none; }
+  }
+
+  @media (max-width:380px) {
+    .hero h1 { font-size:2.2rem; }
+    .lang-toggle { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="logo"><span class="logo-dot"></span>Flowshift</div>
+  <div class="nav-right">
+    <span class="nav-links" style="display:flex;gap:1.5rem;align-items:center;">
+      <a href="#services" id="nav-services">Leistungen</a>
+      <a href="#how" id="nav-how">Ablauf</a>
+    </span>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnDE" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="#waitlist" class="nav-cta" id="nav-cta">Früher Zugang &#8594;</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-orb orb1"></div>
+    <div class="hero-orb orb2"></div>
+    <div class="hero-orb orb3"></div>
+  </div>
+  <div class="hero-label" id="hero-label">KI-Automatisierungsstudio — Gegr. 2025</div>
+  <h1 id="hero-h1">Wir automatisieren die Arbeit, die <em>niemand</em> machen will</h1>
+  <p class="hero-sub" id="hero-sub">Flowshift baut KI-gestützte Workflows für Hotels, Agenturen und wachsende Unternehmen — damit sich euer Team auf das konzentrieren kann, was wirklich zählt.</p>
+  <div class="hero-bottom">
+    <div>
+      <div style="font-family:var(--mono);font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:0.6rem;text-transform:uppercase;" id="hero-cta-label">Früher Zugang sichern</div>
+      <div class="waitlist-form">
+        <input type="email" id="heroEmail" placeholder="deine@email.de">
+        <button id="heroBtn" onclick="joinWaitlist('heroEmail','heroBtn')">Jetzt anmelden &#8594;</button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">4&#215;</div>
+        <div class="stat-label" id="stat1">schnellere Antworten</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">80%</div>
+        <div class="stat-label" id="stat2">weniger Handarbeit</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<section id="services">
+  <div class="section-label reveal" id="sec-services-label">Was wir bauen</div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01</div>
+      <svg class="service-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="8" width="28" height="20" rx="2"/><path d="M6 13l14 9 14-9"/></svg>
+      <h3 id="s1h">E-Mail-Automation</h3>
+      <p id="s1p">Automatische Antworten auf Buchungsanfragen, Post-Checkout-Zufriedenheitssequenzen und Follow-up-Flows, die rund um die Uhr laufen — ohne dass jemand etwas tun muss.</p>
+      <div class="service-tag" id="s1tag">Beliebteste</div>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">02</div>
+      <svg class="service-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="20" cy="20" r="14"/><path d="M14 20h12M20 14v12"/><circle cx="20" cy="20" r="4"/></svg>
+      <h3 id="s2h">KI-Chatbots</h3>
+      <p id="s2p">Intelligente Bots für eure Website, WhatsApp oder E-Mail, die FAQs beantworten, Leads erfassen und Gäste qualifizieren — bevor ein Mensch eingreift.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">03</div>
+      <svg class="service-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 30V18l12-10 12 10v12"/><rect x="15" y="22" width="10" height="8"/></svg>
+      <h3 id="s3h">CRM & Lead-Flows</h3>
+      <p id="s3p">Leads automatisch ins CRM eintragen, taggen und weiterleiten. Kein heißer Kontakt geht mehr verloren, weil jemand vergessen hat nachzufassen.</p>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">04</div>
+      <svg class="service-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="24" height="28" rx="2"/><path d="M14 14h12M14 20h12M14 26h8"/></svg>
+      <h3 id="s4h">Dokumentenverarbeitung</h3>
+      <p id="s4p">Daten aus Rechnungen, Verträgen und PDFs automatisch auslesen und ins richtige System übertragen. Kein Copy-Paste, keine Fehler.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">05</div>
+      <svg class="service-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 28l6-8 5 4 5-7 4 5"/><rect x="6" y="6" width="28" height="28" rx="2"/></svg>
+      <h3 id="s5h">Automatisierte Berichte</h3>
+      <p id="s5p">Daten aus mehreren Quellen zusammenziehen und jeden Morgen saubere Berichte ins Postfach liefern. Schluss mit manuellen Tabellen montags.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">06</div>
+      <svg class="service-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="20" r="4"/><circle cx="28" cy="10" r="4"/><circle cx="28" cy="30" r="4"/><path d="M16 18l8-6M16 22l8 6"/></svg>
+      <h3 id="s6h">Individuelle Workflows</h3>
+      <p id="s6p">Habt ihr einen Prozess, der in keine Vorlage passt? Wir analysieren ihn, bauen ihn nach und übergeben ihn vollständig dokumentiert.</p>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="how-section">
+  <div class="section-label reveal" id="sec-how-label">So funktioniert's</div>
+  <div class="how-grid">
+    <div class="how-left reveal">
+      <h2 id="how-h2">Von der <em>Idee</em> zur laufenden Automation in zwei Wochen</h2>
+      <p id="how-p">Kein langes Onboarding. Keine aufgeblähten Verträge. Wir arbeiten schnell, liefern funktionierende Automationen und lassen die Ergebnisse sprechen.</p>
+    </div>
+    <div class="steps reveal reveal-delay-1">
+      <div class="step"><div class="step-num">01</div><div class="step-content"><h4 id="step1h">Erstgespräch (30 Min.)</h4><p id="step1p">Wir analysieren eure größten Zeitfresser und identifizieren, welche Automationen sofort den höchsten ROI bringen.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-content"><h4 id="step2h">Aufbau & Konfiguration</h4><p id="step2p">Wir bauen eure Automation in 5–10 Tagen — mit Make, n8n oder direkter API, je nachdem was zu eurem System passt.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-content"><h4 id="step3h">Test & Übergabe</h4><p id="step3p">Wir testen live zusammen, beheben Grenzfälle und übergeben vollständige Dokumentation — keine Black Box.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-content"><h4 id="step4h">Optional: monatliches Retainer</h4><p id="step4p">Wir bleiben für Wartung, Verbesserungen und die nächste Automation an eurer Seite, während euer Business wächst.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="proof-section">
+  <div class="section-label reveal" id="sec-proof-label">Erste Ergebnisse</div>
+  <div class="proof-grid">
+    <div class="proof-card reveal">
+      <div class="proof-tag" id="proof1tag">Hotel-Kunde</div>
+      <div class="proof-quote" id="proof1q">Buchungsanfragen bekommen jetzt innerhalb von 2 Minuten eine Antwort — auch um 2 Uhr nachts. Wir gewinnen Gäste, die wir vorher verloren hätten.</div>
+      <div class="proof-author"><strong id="proof1name">Front-Office-Managerin</strong><span id="proof1loc">Boutique-Hotel, Leipzig</span></div>
+    </div>
+    <div class="proof-card reveal reveal-delay-1">
+      <div class="proof-tag" id="proof2tag">Hotellerie</div>
+      <div class="proof-quote" id="proof2q">Die Zufriedenheits-E-Mail-Sequenz hat uns im ersten Monat 14 neue Google-Bewertungen gebracht. Sie läuft einfach von selbst.</div>
+      <div class="proof-author"><strong id="proof2name">General Manager</strong><span id="proof2loc">4-Sterne-Hotel, Deutschland</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist" class="waitlist-section">
+  <h2 id="wl-h2">Bereit, damit <em>aufzuhören?</em></h2>
+  <p id="wl-sub">Warteliste beitreten — erste Kunden erhalten Priority-Onboarding und eine kostenlose Prozessanalyse.</p>
+  <div class="waitlist-form-lg">
+    <input type="email" id="bottomEmail" placeholder="deine@email.de">
+    <button id="bottomBtn" onclick="joinWaitlist('bottomEmail','bottomBtn')">Früher Zugang &#8594;</button>
+  </div>
+  <div class="waitlist-count"><b id="countNum">12</b> <span id="wl-count-text">Personen auf der Warteliste</span></div>
+</section>
+
+<footer>
+  <div class="logo"><span class="logo-dot"></span>Flowshift</div>
+  <p id="footer-sub">KI-Automatisierungsstudio — die Workflows von morgen, heute.</p>
+  <p style="color:rgba(245,242,235,0.2);">© 2025 Flowshift</p>
+</footer>
+
+<script>
+/* ---- Custom cursor ---- */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+function animRing() { rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+animRing();
+document.querySelectorAll('button,a,input').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2.5)'; ring.style.opacity='0'; ring.style.width='60px'; ring.style.height='60px'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.opacity='0.3'; ring.style.width='40px'; ring.style.height='40px'; });
+});
+
+/* ---- Scroll reveal ---- */
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => revealObserver.observe(el));
+
+/* ---- Nav shrink on scroll ---- */
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+/* ---- Language strings ---- */
+const strings = {
+  de: {
+    title: 'Flowshift \u2014 KI-Automatisierung f\u00fcr Hotels & mehr',
+    'nav-services': 'Leistungen', 'nav-how': 'Ablauf', 'nav-cta': 'Fr\u00fcher Zugang \u2192',
+    'hero-label': 'KI-Automatisierungsstudio \u2014 Gegr. 2025',
+    'hero-h1': 'Wir automatisieren die Arbeit, die <em>niemand</em> machen will',
+    'hero-sub': 'Flowshift baut KI-gest\u00fctzte Workflows f\u00fcr Hotels, Agenturen und wachsende Unternehmen \u2014 damit sich euer Team auf das konzentrieren kann, was wirklich z\u00e4hlt.',
+    'hero-cta-label': 'Fr\u00fcher Zugang sichern',
+    'heroBtn': 'Jetzt anmelden \u2192', 'heroEmail': 'deine@email.de',
+    'stat1': 'schnellere Antworten', 'stat2': 'weniger Handarbeit',
+    ticker: ['E-Mail-Automatisierung','KI-Chatbots','Lead-Generierung','G\u00e4stezufriedenheits-Flows','CRM-Automation','Dokumentenverarbeitung','Auto-Buchungsantworten','Reporting-Pipelines'],
+    'sec-services-label': 'Was wir bauen',
+    's1h':'E-Mail-Automation','s1p':'Automatische Antworten auf Buchungsanfragen, Post-Checkout-Zufriedenheitssequenzen und Follow-up-Flows, die rund um die Uhr laufen \u2014 ohne dass jemand etwas tun muss.','s1tag':'Beliebteste',
+    's2h':'KI-Chatbots','s2p':'Intelligente Bots f\u00fcr eure Website, WhatsApp oder E-Mail, die FAQs beantworten, Leads erfassen und G\u00e4ste qualifizieren \u2014 bevor ein Mensch eingreift.',
+    's3h':'CRM & Lead-Flows','s3p':'Leads automatisch ins CRM eintragen, taggen und weiterleiten. Kein hei\u00dfer Kontakt geht mehr verloren, weil jemand vergessen hat nachzufassen.',
+    's4h':'Dokumentenverarbeitung','s4p':'Daten aus Rechnungen, Vertr\u00e4gen und PDFs automatisch auslesen und ins richtige System \u00fcbertragen. Kein Copy-Paste, keine Fehler.',
+    's5h':'Automatisierte Berichte','s5p':'Daten aus mehreren Quellen zusammenziehen und jeden Morgen saubere Berichte ins Postfach liefern. Schluss mit manuellen Tabellen montags.',
+    's6h':'Individuelle Workflows','s6p':'Habt ihr einen Prozess, der in keine Vorlage passt? Wir analysieren ihn, bauen ihn nach und \u00fcbergeben ihn vollst\u00e4ndig dokumentiert.',
+    'sec-how-label': 'So funktioniert\'s',
+    'how-h2': 'Von der <em>Idee</em> zur laufenden Automation in zwei Wochen',
+    'how-p': 'Kein langes Onboarding. Keine aufgebl\u00e4hten Vertr\u00e4ge. Wir arbeiten schnell, liefern funktionierende Automationen und lassen die Ergebnisse sprechen.',
+    'step1h':'Erstgespr\u00e4ch (30 Min.)','step1p':'Wir analysieren eure gr\u00f6\u00dften Zeitfresser und identifizieren, welche Automationen sofort den h\u00f6chsten ROI bringen.',
+    'step2h':'Aufbau & Konfiguration','step2p':'Wir bauen eure Automation in 5\u201310 Tagen \u2014 mit Make, n8n oder direkter API, je nachdem was zu eurem System passt.',
+    'step3h':'Test & \u00dcbergabe','step3p':'Wir testen live zusammen, beheben Grenzf\u00e4lle und \u00fcbergeben vollst\u00e4ndige Dokumentation \u2014 keine Black Box.',
+    'step4h':'Optional: monatliches Retainer','step4p':'Wir bleiben f\u00fcr Wartung, Verbesserungen und die n\u00e4chste Automation an eurer Seite, w\u00e4hrend euer Business w\u00e4chst.',
+    'sec-proof-label':'Erste Ergebnisse',
+    'proof1tag':'Hotel-Kunde','proof1q':'Buchungsanfragen bekommen jetzt innerhalb von 2 Minuten eine Antwort \u2014 auch um 2 Uhr nachts. Wir gewinnen G\u00e4ste, die wir vorher verloren h\u00e4tten.','proof1name':'Front-Office-Managerin','proof1loc':'Boutique-Hotel, Leipzig',
+    'proof2tag':'Hotellerie','proof2q':'Die Zufriedenheits-E-Mail-Sequenz hat uns im ersten Monat 14 neue Google-Bewertungen gebracht. Sie l\u00e4uft einfach von selbst.','proof2name':'General Manager','proof2loc':'4-Sterne-Hotel, Deutschland',
+    'wl-h2':'Bereit, damit <em>aufzuh\u00f6ren?</em>','wl-sub':'Warteliste beitreten \u2014 erste Kunden erhalten Priority-Onboarding und eine kostenlose Prozessanalyse.',
+    'bottomBtn':'Fr\u00fcher Zugang \u2192','bottomEmail':'deine@email.de','wl-count-text':'Personen auf der Warteliste',
+    'footer-sub':'KI-Automatisierungsstudio \u2014 die Workflows von morgen, heute.',
+    successHero: '\u2713 Du bist dabei!', successBottom: '\u2713 Du bist dabei!', touchHero: 'Wir melden uns!', touchBottom: 'Wir melden uns!'
+  },
+  en: {
+    title: 'Flowshift \u2014 AI Automation for Hospitality & Beyond',
+    'nav-services': 'Services', 'nav-how': 'Process', 'nav-cta': 'Join waitlist \u2192',
+    'hero-label': 'AI Automation Studio \u2014 Est. 2025',
+    'hero-h1': 'We automate the work <em>nobody</em> wants to do',
+    'hero-sub': 'Flowshift builds AI-powered workflows for hotels, agencies, and growing businesses \u2014 so your team can focus on what actually matters.',
+    'hero-cta-label': 'Get early access',
+    'heroBtn': 'Join waitlist \u2192', 'heroEmail': 'your@email.com',
+    'stat1': 'faster replies', 'stat2': 'less manual work',
+    ticker: ['Email automation','AI chatbots','Lead generation','Guest satisfaction flows','CRM automation','Document processing','Auto-booking replies','Reporting pipelines'],
+    'sec-services-label': 'What we build',
+    's1h':'Email automation','s1p':'Auto-reply to booking inquiries, post-checkout satisfaction sequences, and follow-up flows that run 24/7 without anyone lifting a finger.','s1tag':'Most popular',
+    's2h':'AI chatbots','s2p':'Intelligent bots for your website, WhatsApp, or email that handle FAQs, capture leads, and qualify guests before a human ever steps in.',
+    's3h':'CRM & lead flows','s3p':'Automatically enrich, tag, and route leads into your CRM. Never let a hot prospect go cold because someone forgot to follow up.',
+    's4h':'Document processing','s4p':'Extract data from invoices, contracts, and PDFs automatically. Route it to the right system. Zero copy-paste, zero errors.',
+    's5h':'Automated reporting','s5p':'Pull data from multiple sources and deliver clean reports to your inbox every morning. No more manual spreadsheets on Mondays.',
+    's6h':'Custom workflows','s6p':'Got a repetitive process that doesn\'t fit a template? We map it, build it, and hand it off \u2014 fully documented so your team owns it.',
+    'sec-how-label': 'How it works',
+    'how-h2': 'From <em>idea</em> to running in two weeks',
+    'how-p': 'No lengthy onboarding. No bloated retainers. We move fast, ship working automations, and let results do the talking.',
+    'step1h':'Discovery call (30 min)','step1p':'We map your biggest time drains and identify which automations will have the highest ROI immediately.',
+    'step2h':'Build & configure','step2p':'We build your automation in 5\u201310 days using Make, n8n, or direct API depending on what fits your stack.',
+    'step3h':'Test & handover','step3p':'We run it live together, fix edge cases, and hand you full documentation so nothing is a black box.',
+    'step4h':'Optional: monthly retainer','step4p':'Keep us on for maintenance, improvements, and building the next automation as your business grows.',
+    'sec-proof-label':'Early results',
+    'proof1tag':'Hotel client','proof1q':'Booking inquiries now get a reply in under 2 minutes, even at 2am. We\'ve converted guests we would have lost before.','proof1name':'Front Office Manager','proof1loc':'Boutique Hotel, Leipzig',
+    'proof2tag':'Hospitality','proof2q':'The satisfaction email sequence alone brought us 14 new Google reviews in the first month. It just runs itself.','proof2name':'General Manager','proof2loc':'4-star property, Germany',
+    'wl-h2':'Ready to stop <em>doing it manually?</em>','wl-sub':'Join the waitlist \u2014 first clients get priority onboarding and a free process audit.',
+    'bottomBtn':'Get early access \u2192','bottomEmail':'your@email.com','wl-count-text':'people on the waitlist',
+    'footer-sub':'AI Automation Studio \u2014 building the workflows of tomorrow, today.',
+    successHero: '\u2713 You\'re in!', successBottom: '\u2713 You\'re in!', touchHero: 'We\'ll be in touch!', touchBottom: 'We\'ll be in touch!'
+  }
+};
+
+let currentLang = 'de';
+
+function buildTicker(lang) {
+  const items = strings[lang].ticker;
+  const doubled = [...items, ...items];
+  document.getElementById('tickerTrack').innerHTML = doubled.map(t => '<span class="ticker-item"><span>\u2726</span> ' + t + '</span>').join('');
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.getElementById('btnDE').classList.toggle('active', lang==='de');
+  document.getElementById('btnEN').classList.toggle('active', lang==='en');
+  document.title = strings[lang].title;
+
+  const s = strings[lang];
+  const htmlIds = ['hero-h1','how-h2','wl-h2'];
+  const textIds = ['nav-services','nav-how','nav-cta','hero-label','hero-sub','hero-cta-label','stat1','stat2',
+    'sec-services-label','s1h','s1p','s1tag','s2h','s2p','s3h','s3p','s4h','s4p','s5h','s5p','s6h','s6p',
+    'sec-how-label','how-p','step1h','step1p','step2h','step2p','step3h','step3p','step4h','step4p',
+    'sec-proof-label','proof1tag','proof1q','proof1name','proof1loc','proof2tag','proof2q','proof2name','proof2loc',
+    'wl-sub','wl-count-text','footer-sub'];
+
+  textIds.forEach(id => { const el=document.getElementById(id); if(el && s[id]) el.textContent=s[id]; });
+  htmlIds.forEach(id => { const el=document.getElementById(id); if(el && s[id]) el.innerHTML=s[id]; });
+
+  const heroBtn = document.getElementById('heroBtn');
+  const bottomBtn = document.getElementById('bottomBtn');
+  if (heroBtn && !heroBtn.classList.contains('success')) heroBtn.textContent = s['heroBtn'];
+  if (bottomBtn && !bottomBtn.classList.contains('success')) bottomBtn.textContent = s['bottomBtn'];
+  const heroEmail = document.getElementById('heroEmail');
+  const bottomEmail = document.getElementById('bottomEmail');
+  if (heroEmail && !heroEmail.disabled) heroEmail.placeholder = s['heroEmail'];
+  if (bottomEmail && !bottomEmail.disabled) bottomEmail.placeholder = s['bottomEmail'];
+
+  buildTicker(lang);
+}
+
+buildTicker('de');
+
+let waitlistCount = 12;
+function joinWaitlist(inputId, btnId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (!input.value.trim() || !input.value.includes('@')) {
+    input.style.outline = '2px solid #e05';
+    input.style.outlineOffset = '-2px';
+    setTimeout(() => { input.style.outline=''; input.style.outlineOffset=''; }, 800);
+    return;
+  }
+  const s = strings[currentLang];
+  btn.textContent = inputId === 'heroEmail' ? s.successHero : s.successBottom;
+  btn.classList.add('success');
+  input.value = '';
+  input.placeholder = inputId === 'heroEmail' ? s.touchHero : s.touchBottom;
+  input.disabled = true;
+  waitlistCount++;
+  document.getElementById('countNum').textContent = waitlistCount;
+}
+</script>
+</body>
+</html>
