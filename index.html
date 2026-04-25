@@ -501,19 +501,45 @@ function setLang(lang) {
 
 buildTicker('de');
 
+const MAKE_WEBHOOK = 'https://hook.eu1.make.com/nrvme1ns4v9xxzfy2wpj11ygoata8lnj';
+
 let waitlistCount = 12;
-function joinWaitlist(inputId, btnId) {
+async function joinWaitlist(inputId, btnId) {
   const input = document.getElementById(inputId);
   const btn = document.getElementById(btnId);
-  if (!input.value.trim() || !input.value.includes('@')) {
+  const email = input.value.trim();
+
+  if (!email || !email.includes('@')) {
     input.style.outline = '2px solid #e05';
     input.style.outlineOffset = '-2px';
     setTimeout(() => { input.style.outline=''; input.style.outlineOffset=''; }, 800);
     return;
   }
+
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = '...';
+
+  try {
+    await fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        language: currentLang,
+        source: inputId === 'heroEmail' ? 'hero' : 'bottom',
+        timestamp: new Date().toISOString(),
+        page: window.location.href
+      })
+    });
+  } catch (e) {
+    // fail silently — still show success to user
+  }
+
   const s = strings[currentLang];
   btn.textContent = inputId === 'heroEmail' ? s.successHero : s.successBottom;
   btn.classList.add('success');
+  btn.disabled = false;
   input.value = '';
   input.placeholder = inputId === 'heroEmail' ? s.touchHero : s.touchBottom;
   input.disabled = true;
