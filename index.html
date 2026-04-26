@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
 <title>Flowshift — KI-Automatisierung für Hotels & mehr</title>
+<meta name="description" content="Flowshift baut KI-gestützte Workflows für Hotels, Agenturen und wachsende Unternehmen. E-Mail-Automation, KI-Chatbots, CRM-Flows — ab 499 €.">
+<meta property="og:title" content="Flowshift — KI-Automatisierung für Hotels & mehr">
+<meta property="og:description" content="Wir automatisieren die Arbeit, die niemand machen will. Ab 499 €.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%230a0a0a'/><circle cx='16' cy='16' r='6' fill='%23c8f03c'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -153,8 +158,55 @@
   .waitlist-count { font-family:var(--mono); font-size:0.72rem; color:rgba(10,10,10,0.45); margin-top:1.2rem; position:relative; z-index:1; }
   .waitlist-count b { color:var(--ink); }
 
+  /* Pricing */
+  .pricing-section { background:var(--paper); }
+  .pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+  .pricing-card { border:1px solid var(--border); border-radius:4px; padding:2.5rem; position:relative; transition:all 0.4s cubic-bezier(0.23,1,0.32,1); background:var(--paper); }
+  .pricing-card:hover { box-shadow:var(--shadow-md); transform:translateY(-3px); }
+  .pricing-card.featured { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .pricing-card.featured .pricing-desc { color:rgba(245,242,235,0.45); }
+  .pricing-card.featured .pricing-feature { color:rgba(245,242,235,0.7); border-color:rgba(245,242,235,0.08); }
+  .pricing-badge { display:inline-block; font-family:var(--mono); font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; background:var(--accent); color:var(--ink); padding:0.25rem 0.7rem; border-radius:100px; margin-bottom:1.5rem; font-weight:500; }
+  .pricing-name { font-family:var(--sans); font-size:0.78rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:0.8rem; opacity:0.5; }
+  .pricing-price { font-family:var(--serif); font-size:3rem; font-style:italic; line-height:1; margin-bottom:0.4rem; }
+  .pricing-price span { font-family:var(--mono); font-size:0.8rem; font-style:normal; opacity:0.5; vertical-align:middle; }
+  .pricing-desc { font-family:var(--mono); font-size:0.75rem; color:var(--muted); margin-bottom:2rem; line-height:1.6; }
+  .pricing-features { list-style:none; margin-bottom:2rem; }
+  .pricing-feature { font-family:var(--mono); font-size:0.75rem; color:var(--muted); padding:0.6rem 0; border-bottom:1px solid var(--border); display:flex; gap:0.6rem; align-items:flex-start; }
+  .pricing-feature::before { content:'✦'; color:var(--accent); font-size:0.55rem; padding-top:0.15rem; flex-shrink:0; }
+  .pricing-cta { display:block; text-align:center; font-family:var(--mono); font-size:0.75rem; letter-spacing:0.08em; padding:0.85rem 1.5rem; border-radius:100px; text-decoration:none; transition:all 0.3s cubic-bezier(0.23,1,0.32,1); }
+  .pricing-card:not(.featured) .pricing-cta { border:1.5px solid var(--ink); color:var(--ink); }
+  .pricing-card:not(.featured) .pricing-cta:hover { background:var(--ink); color:var(--paper); }
+  .pricing-card.featured .pricing-cta { background:var(--accent); color:var(--ink); }
+  .pricing-card.featured .pricing-cta:hover { background:#d4f54a; }
+  .pricing-note { font-family:var(--mono); font-size:0.7rem; color:var(--muted); text-align:center; margin-top:2rem; }
+
+  /* Calendly CTA strip */
+  .cta-strip { background:var(--paper2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:2.5rem 3rem; display:flex; align-items:center; justify-content:space-between; gap:2rem; }
+  .cta-strip-text h3 { font-family:var(--serif); font-size:1.8rem; margin-bottom:0.3rem; }
+  .cta-strip-text p { font-family:var(--mono); font-size:0.78rem; color:var(--muted); }
+  .cta-strip-btn { flex-shrink:0; display:inline-block; background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:0.78rem; letter-spacing:0.08em; padding:1rem 2rem; border-radius:100px; text-decoration:none; transition:all 0.3s cubic-bezier(0.23,1,0.32,1); white-space:nowrap; }
+  .cta-strip-btn:hover { background:var(--accent2); transform:translateY(-1px); box-shadow:0 4px 12px rgba(10,10,10,0.15); }
+
+  /* Modals */
+  .modal-overlay { position:fixed; inset:0; background:rgba(10,10,10,0.6); z-index:1000; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(4px); }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--paper); width:100%; max-width:680px; max-height:80vh; overflow-y:auto; border-radius:8px 8px 0 0; padding:3rem; transform:translateY(40px); transition:transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+  .modal-overlay.open .modal { transform:translateY(0); }
+  .modal h2 { font-family:var(--serif); font-size:2rem; margin-bottom:0.5rem; }
+  .modal h3 { font-family:var(--sans); font-size:0.85rem; font-weight:700; margin:1.5rem 0 0.5rem; letter-spacing:0.03em; }
+  .modal p, .modal li { font-family:var(--mono); font-size:0.78rem; color:var(--muted); line-height:1.8; }
+  .modal ul { padding-left:1.2rem; }
+  .modal-close { position:absolute; top:1.5rem; right:1.5rem; background:var(--paper2); border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+  .modal-divider { height:1px; background:var(--border); margin:1.5rem 0; }
+
   /* Footer */
-  footer { background:var(--ink); color:var(--paper); padding:3rem 3rem; display:flex; align-items:center; justify-content:space-between; }
+  footer { background:var(--ink); color:var(--paper); padding:3rem 3rem; }
+  .footer-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2rem; }
+  .footer-links { display:flex; gap:2rem; }
+  .footer-links a { font-family:var(--mono); font-size:0.7rem; color:rgba(245,242,235,0.4); text-decoration:none; letter-spacing:0.05em; transition:color 0.2s; }
+  .footer-links a:hover { color:var(--paper); }
+  .footer-bottom { border-top:1px solid rgba(245,242,235,0.08); padding-top:1.5rem; display:flex; align-items:center; justify-content:space-between; }
   footer .logo { color:var(--paper); font-size:1rem; }
   footer p { font-family:var(--mono); font-size:0.68rem; color:rgba(245,242,235,0.3); letter-spacing:0.05em; }
 
@@ -204,8 +256,17 @@
     .waitlist-form-lg input { width:100%; font-size:1rem; padding:1rem 1.25rem; border-bottom:1px solid rgba(10,10,10,0.15); border-radius:0; }
     .waitlist-form-lg button { width:100%; padding:1.1rem; font-size:0.85rem; min-height:54px; cursor:pointer; letter-spacing:0.06em; border-radius:0 0 8px 8px; }
 
-    footer { flex-direction:column; gap:1rem; text-align:center; padding:2rem 1.25rem; }
-    footer p:last-child { display:none; }
+    .pricing-grid { grid-template-columns:1fr; }
+    .pricing-card { padding:1.75rem; }
+
+    .cta-strip { flex-direction:column; align-items:flex-start; padding:2rem 1.25rem; }
+    .cta-strip-btn { width:100%; text-align:center; }
+
+    .modal { padding:2rem 1.25rem; max-height:90vh; }
+
+    .footer-top { flex-direction:column; gap:1.5rem; }
+    .footer-links { flex-wrap:wrap; gap:1rem; }
+    .footer-bottom { flex-direction:column; gap:0.8rem; text-align:center; }
 
     .reveal { opacity:1; transform:none; }
   }
@@ -334,16 +395,68 @@
   <div class="section-label reveal" id="sec-proof-label">Erste Ergebnisse</div>
   <div class="proof-grid">
     <div class="proof-card reveal">
-      <div class="proof-tag" id="proof1tag">Hotel-Kunde</div>
-      <div class="proof-quote" id="proof1q">Buchungsanfragen bekommen jetzt innerhalb von 2 Minuten eine Antwort — auch um 2 Uhr nachts. Wir gewinnen Gäste, die wir vorher verloren hätten.</div>
-      <div class="proof-author"><strong id="proof1name">Front-Office-Managerin</strong><span id="proof1loc">Boutique-Hotel, Leipzig</span></div>
+      <div class="proof-tag" id="proof1tag">Hotellerie — Laufend</div>
+      <div class="proof-quote" id="proof1q">Post-Checkout-Satisfaction-Funnel für ein Boutique-Hotel in Leipzig: 900+ Checkouts/Monat, bisher unter 10 Google-Bewertungen. Ziel: automatisiertes Review-Routing, schlechte Erfahrungen direkt zur Geschäftsführung.</div>
+      <div class="proof-author"><strong id="proof1name">Boutique-Hotel, Leipzig</strong><span id="proof1loc" style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;"><span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span>In Umsetzung</span></div>
     </div>
     <div class="proof-card reveal reveal-delay-1">
-      <div class="proof-tag" id="proof2tag">Hotellerie</div>
-      <div class="proof-quote" id="proof2q">Die Zufriedenheits-E-Mail-Sequenz hat uns im ersten Monat 14 neue Google-Bewertungen gebracht. Sie läuft einfach von selbst.</div>
-      <div class="proof-author"><strong id="proof2name">General Manager</strong><span id="proof2loc">4-Sterne-Hotel, Deutschland</span></div>
+      <div class="proof-tag" id="proof2tag">Recht — In Planung</div>
+      <div class="proof-quote" id="proof2q">Dokumentenverarbeitungs-Automation für eine Anwaltskanzlei: automatisches Auslesen und Weiterleiten von Mandantenanfragen, Verträgen und Fristen — kein manuelles Copy-Paste mehr.</div>
+      <div class="proof-author"><strong id="proof2name">Anwaltskanzlei, Deutschland</strong><span id="proof2loc" style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;"><span style="width:6px;height:6px;background:#f0a830;border-radius:50%;display:inline-block;"></span>Kommt bald</span></div>
     </div>
   </div>
+</section>
+
+<div class="cta-strip reveal">
+  <div class="cta-strip-text">
+    <h3 id="cta-strip-h">Erstgespräch buchen — kostenlos & unverbindlich</h3>
+    <p id="cta-strip-p">30 Minuten. Wir analysieren euren größten Zeitfresser und zeigen, was sich sofort automatisieren lässt.</p>
+  </div>
+  <a href="https://calendly.com/stewartamorim/30min" target="_blank" class="cta-strip-btn" id="cta-strip-btn">Termin buchen &#8594;</a>
+</div>
+
+<section class="pricing-section">
+  <div class="section-label reveal" id="sec-pricing-label">Preise</div>
+  <div class="pricing-grid">
+    <div class="pricing-card reveal">
+      <div class="pricing-name" id="price1-name">Starter</div>
+      <div class="pricing-price">499 <span id="price1-from">€ einmalig</span></div>
+      <div class="pricing-desc" id="price1-desc">Eine einzelne Automation — fertig in 5–10 Tagen. Ideal für den ersten Test.</div>
+      <ul class="pricing-features">
+        <li class="pricing-feature" id="price1-f1">1 Automation nach Wahl</li>
+        <li class="pricing-feature" id="price1-f2">Aufbau & Konfiguration</li>
+        <li class="pricing-feature" id="price1-f3">Test & Übergabe</li>
+        <li class="pricing-feature" id="price1-f4">14 Tage Support</li>
+      </ul>
+      <a href="https://calendly.com/stewartamorim/30min" target="_blank" class="pricing-cta" id="price1-cta">Gespräch buchen</a>
+    </div>
+    <div class="pricing-card featured reveal reveal-delay-1">
+      <div class="pricing-badge" id="price2-badge">Empfohlen</div>
+      <div class="pricing-name" id="price2-name">Growth</div>
+      <div class="pricing-price">999 <span id="price2-from">€ einmalig</span></div>
+      <div class="pricing-desc" id="price2-desc">Bis zu 3 Automationen — komplett aufgebaut, getestet und dokumentiert.</div>
+      <ul class="pricing-features">
+        <li class="pricing-feature" id="price2-f1">Bis zu 3 Automationen</li>
+        <li class="pricing-feature" id="price2-f2">Prozessanalyse inklusive</li>
+        <li class="pricing-feature" id="price2-f3">Vollständige Dokumentation</li>
+        <li class="pricing-feature" id="price2-f4">30 Tage Support</li>
+      </ul>
+      <a href="https://calendly.com/stewartamorim/30min" target="_blank" class="pricing-cta" id="price2-cta">Gespräch buchen</a>
+    </div>
+    <div class="pricing-card reveal reveal-delay-2">
+      <div class="pricing-name" id="price3-name">Retainer</div>
+      <div class="pricing-price">299 <span id="price3-from">€ / Monat</span></div>
+      <div class="pricing-desc" id="price3-desc">Laufende Wartung, Verbesserungen und neue Automationen — wir bleiben an eurer Seite.</div>
+      <ul class="pricing-features">
+        <li class="pricing-feature" id="price3-f1">Unbegrenzte Anpassungen</li>
+        <li class="pricing-feature" id="price3-f2">Neue Automationen monatlich</li>
+        <li class="pricing-feature" id="price3-f3">Prioritäts-Support</li>
+        <li class="pricing-feature" id="price3-f4">Monatliches Review-Call</li>
+      </ul>
+      <a href="https://calendly.com/stewartamorim/30min" target="_blank" class="pricing-cta" id="price3-cta">Gespräch buchen</a>
+    </div>
+  </div>
+  <p class="pricing-note" id="pricing-note">Alle Preise zzgl. MwSt. Individuelle Projekte auf Anfrage.</p>
 </section>
 
 <section id="waitlist" class="waitlist-section">
@@ -357,10 +470,59 @@
 </section>
 
 <footer>
-  <div class="logo"><span class="logo-dot"></span>Flowshift</div>
-  <p id="footer-sub">KI-Automatisierungsstudio — die Workflows von morgen, heute.</p>
-  <p style="color:rgba(245,242,235,0.2);">© 2025 Flowshift</p>
+  <div class="footer-top">
+    <div class="logo"><span class="logo-dot"></span>Flowshift</div>
+    <div class="footer-links">
+      <a href="mailto:stewartamorim@gmail.com">stewartamorim@gmail.com</a>
+      <a href="https://calendly.com/stewartamorim/30min" target="_blank">Termin buchen</a>
+      <a href="#" onclick="openModal('impressum');return false;">Impressum</a>
+      <a href="#" onclick="openModal('datenschutz');return false;">Datenschutz</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p id="footer-sub">KI-Automatisierungsstudio — die Workflows von morgen, heute.</p>
+    <p>© 2025 Flowshift · Stewart Amorim</p>
+  </div>
 </footer>
+
+<!-- Impressum Modal -->
+<div class="modal-overlay" id="modal-impressum" onclick="if(event.target===this)closeModal('impressum')">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeModal('impressum')">✕</button>
+    <h2>Impressum</h2>
+    <div class="modal-divider"></div>
+    <h3>Angaben gemäß § 5 TMG</h3>
+    <p>Stewart Amorim<br>Straße des 18. Oktober 32<br>04103 Leipzig<br>Deutschland</p>
+    <h3>Kontakt</h3>
+    <p>E-Mail: stewartamorim@gmail.com</p>
+    <h3>Hinweis</h3>
+    <p>Diese Website wird von einer Einzelperson ohne eingetragenes Gewerbe betrieben. Es handelt sich um ein nicht-kommerzielles Angebot im Aufbau.</p>
+    <div class="modal-divider"></div>
+    <h3>Haftungsausschluss</h3>
+    <p>Die Inhalte dieser Seite wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.</p>
+  </div>
+</div>
+
+<!-- Datenschutz Modal -->
+<div class="modal-overlay" id="modal-datenschutz" onclick="if(event.target===this)closeModal('datenschutz')">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeModal('datenschutz')">✕</button>
+    <h2>Datenschutzerklärung</h2>
+    <div class="modal-divider"></div>
+    <h3>Verantwortlicher</h3>
+    <p>Stewart Amorim, Straße des 18. Oktober 32, 04103 Leipzig<br>E-Mail: stewartamorim@gmail.com</p>
+    <h3>Erhobene Daten</h3>
+    <p>Bei der Nutzung der Warteliste erheben wir folgende Daten: E-Mail-Adresse, Zeitpunkt der Anmeldung, Spracheinstellung und Quelle (Hero oder Footer-Formular). Diese Daten werden ausschließlich zur Kontaktaufnahme im Rahmen der Warteliste verwendet.</p>
+    <h3>Datenübermittlung</h3>
+    <p>Die eingegebenen Daten werden über einen Webhook an Make.com (Celonis SE, Theresienstraße 6, 80333 München) übertragen und dort verarbeitet. Make.com ist zertifiziert nach DSGVO-Standards.</p>
+    <h3>Google Fonts</h3>
+    <p>Diese Seite verwendet Google Fonts (Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA). Beim Laden der Schriftarten wird Ihre IP-Adresse an Google übertragen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einheitlicher Darstellung).</p>
+    <h3>Ihre Rechte</h3>
+    <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer Daten. Wenden Sie sich dazu an: stewartamorim@gmail.com</p>
+    <h3>Löschung</h3>
+    <p>Ihre Daten werden gelöscht, sobald sie für den Zweck der Erhebung nicht mehr notwendig sind oder Sie der Speicherung widersprechen.</p>
+  </div>
+</div>
 
 <script>
 /* ---- Custom cursor ---- */
@@ -386,6 +548,11 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 reveals.forEach(el => revealObserver.observe(el));
+
+/* ---- Modals ---- */
+function openModal(id) { document.getElementById('modal-'+id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById('modal-'+id).classList.remove('open'); document.body.style.overflow=''; }
+document.addEventListener('keydown', e => { if(e.key==='Escape') { ['impressum','datenschutz'].forEach(closeModal); } });
 
 /* ---- Nav shrink on scroll ---- */
 const nav = document.querySelector('nav');
@@ -419,9 +586,20 @@ const strings = {
     'step2h':'Aufbau & Konfiguration','step2p':'Wir bauen eure Automation in 5\u201310 Tagen \u2014 mit Make, n8n oder direkter API, je nachdem was zu eurem System passt.',
     'step3h':'Test & \u00dcbergabe','step3p':'Wir testen live zusammen, beheben Grenzf\u00e4lle und \u00fcbergeben vollst\u00e4ndige Dokumentation \u2014 keine Black Box.',
     'step4h':'Optional: monatliches Retainer','step4p':'Wir bleiben f\u00fcr Wartung, Verbesserungen und die n\u00e4chste Automation an eurer Seite, w\u00e4hrend euer Business w\u00e4chst.',
-    'sec-proof-label':'Erste Ergebnisse',
-    'proof1tag':'Hotel-Kunde','proof1q':'Buchungsanfragen bekommen jetzt innerhalb von 2 Minuten eine Antwort \u2014 auch um 2 Uhr nachts. Wir gewinnen G\u00e4ste, die wir vorher verloren h\u00e4tten.','proof1name':'Front-Office-Managerin','proof1loc':'Boutique-Hotel, Leipzig',
-    'proof2tag':'Hotellerie','proof2q':'Die Zufriedenheits-E-Mail-Sequenz hat uns im ersten Monat 14 neue Google-Bewertungen gebracht. Sie l\u00e4uft einfach von selbst.','proof2name':'General Manager','proof2loc':'4-Sterne-Hotel, Deutschland',
+    'sec-proof-label':'Erste Projekte',
+    'proof1tag':'Hotellerie \u2014 Laufend','proof1q':'Post-Checkout-Satisfaction-Funnel f\u00fcr ein Boutique-Hotel in Leipzig: 900+ Checkouts/Monat, bisher unter 10 Google-Bewertungen. Ziel: automatisiertes Review-Routing, schlechte Erfahrungen direkt zur Gesch\u00e4ftsf\u00fchrung.','proof1name':'Boutique-Hotel, Leipzig','proof1loc':'In Umsetzung',
+    'proof2tag':'Recht \u2014 In Planung','proof2q':'Dokumentenverarbeitungs-Automation f\u00fcr eine Anwaltskanzlei: automatisches Auslesen und Weiterleiten von Mandantenanfragen, Vertr\u00e4gen und Fristen \u2014 kein manuelles Copy-Paste mehr.','proof2name':'Anwaltskanzlei, Deutschland','proof2loc':'Kommt bald',
+    'cta-strip-h':'Erstgespr\u00e4ch buchen \u2014 kostenlos & unverbindlich',
+    'cta-strip-p':'30 Minuten. Wir analysieren euren gr\u00f6\u00dften Zeitfresser und zeigen, was sich sofort automatisieren l\u00e4sst.',
+    'cta-strip-btn':'Termin buchen \u2192',
+    'sec-pricing-label':'Preise',
+    'price1-name':'Starter','price1-from':'\u20ac einmalig','price1-desc':'Eine einzelne Automation \u2014 fertig in 5\u201310 Tagen. Ideal f\u00fcr den ersten Test.',
+    'price1-f1':'1 Automation nach Wahl','price1-f2':'Aufbau & Konfiguration','price1-f3':'Test & \u00dcbergabe','price1-f4':'14 Tage Support','price1-cta':'Gespr\u00e4ch buchen',
+    'price2-badge':'Empfohlen','price2-name':'Growth','price2-from':'\u20ac einmalig','price2-desc':'Bis zu 3 Automationen \u2014 komplett aufgebaut, getestet und dokumentiert.',
+    'price2-f1':'Bis zu 3 Automationen','price2-f2':'Prozessanalyse inklusive','price2-f3':'Vollst\u00e4ndige Dokumentation','price2-f4':'30 Tage Support','price2-cta':'Gespr\u00e4ch buchen',
+    'price3-name':'Retainer','price3-from':'\u20ac / Monat','price3-desc':'Laufende Wartung, Verbesserungen und neue Automationen \u2014 wir bleiben an eurer Seite.',
+    'price3-f1':'Unbegrenzte Anpassungen','price3-f2':'Neue Automationen monatlich','price3-f3':'Priorit\u00e4ts-Support','price3-f4':'Monatliches Review-Call','price3-cta':'Gespr\u00e4ch buchen',
+    'pricing-note':'Alle Preise zzgl. MwSt. Individuelle Projekte auf Anfrage.',
     'wl-h2':'Bereit, damit <em>aufzuh\u00f6ren?</em>','wl-sub':'Warteliste beitreten \u2014 erste Kunden erhalten Priority-Onboarding und eine kostenlose Prozessanalyse.',
     'bottomBtn':'Fr\u00fcher Zugang \u2192','bottomEmail':'deine@email.de','wl-count-text':'Personen auf der Warteliste',
     'footer-sub':'KI-Automatisierungsstudio \u2014 die Workflows von morgen, heute.',
@@ -451,9 +629,20 @@ const strings = {
     'step2h':'Build & configure','step2p':'We build your automation in 5\u201310 days using Make, n8n, or direct API depending on what fits your stack.',
     'step3h':'Test & handover','step3p':'We run it live together, fix edge cases, and hand you full documentation so nothing is a black box.',
     'step4h':'Optional: monthly retainer','step4p':'Keep us on for maintenance, improvements, and building the next automation as your business grows.',
-    'sec-proof-label':'Early results',
-    'proof1tag':'Hotel client','proof1q':'Booking inquiries now get a reply in under 2 minutes, even at 2am. We\'ve converted guests we would have lost before.','proof1name':'Front Office Manager','proof1loc':'Boutique Hotel, Leipzig',
-    'proof2tag':'Hospitality','proof2q':'The satisfaction email sequence alone brought us 14 new Google reviews in the first month. It just runs itself.','proof2name':'General Manager','proof2loc':'4-star property, Germany',
+    'sec-proof-label':'First projects',
+    'proof1tag':'Hospitality \u2014 Active','proof1q':'Post-checkout satisfaction funnel for a boutique hotel in Leipzig: 900+ checkouts/month, fewer than 10 Google reviews. Goal: automated review routing, bad experiences escalated directly to management.','proof1name':'Boutique Hotel, Leipzig','proof1loc':'In progress',
+    'proof2tag':'Legal \u2014 Upcoming','proof2q':'Document processing automation for a law firm: automatically extracting and routing client inquiries, contracts, and deadlines \u2014 zero manual copy-paste.','proof2name':'Law firm, Germany','proof2loc':'Coming soon',
+    'cta-strip-h':'Book a free discovery call \u2014 no strings attached',
+    'cta-strip-p':'30 minutes. We map your biggest time drain and show you what can be automated right now.',
+    'cta-strip-btn':'Book a call \u2192',
+    'sec-pricing-label':'Pricing',
+    'price1-name':'Starter','price1-from':'\u20ac one-time','price1-desc':'One automation, done in 5\u201310 days. Perfect for a first test.',
+    'price1-f1':'1 automation of your choice','price1-f2':'Build & configuration','price1-f3':'Test & handover','price1-f4':'14 days support','price1-cta':'Book a call',
+    'price2-badge':'Recommended','price2-name':'Growth','price2-from':'\u20ac one-time','price2-desc':'Up to 3 automations \u2014 fully built, tested, and documented.',
+    'price2-f1':'Up to 3 automations','price2-f2':'Process audit included','price2-f3':'Full documentation','price2-f4':'30 days support','price2-cta':'Book a call',
+    'price3-name':'Retainer','price3-from':'\u20ac / month','price3-desc':'Ongoing maintenance, improvements, and new automations as your business grows.',
+    'price3-f1':'Unlimited adjustments','price3-f2':'New automations monthly','price3-f3':'Priority support','price3-f4':'Monthly review call','price3-cta':'Book a call',
+    'pricing-note':'All prices excl. VAT. Custom projects on request.',
     'wl-h2':'Ready to stop <em>doing it manually?</em>','wl-sub':'Join the waitlist \u2014 first clients get priority onboarding and a free process audit.',
     'bottomBtn':'Get early access \u2192','bottomEmail':'your@email.com','wl-count-text':'people on the waitlist',
     'footer-sub':'AI Automation Studio \u2014 building the workflows of tomorrow, today.',
@@ -482,6 +671,12 @@ function setLang(lang) {
     'sec-services-label','s1h','s1p','s1tag','s2h','s2p','s3h','s3p','s4h','s4p','s5h','s5p','s6h','s6p',
     'sec-how-label','how-p','step1h','step1p','step2h','step2p','step3h','step3p','step4h','step4p',
     'sec-proof-label','proof1tag','proof1q','proof1name','proof1loc','proof2tag','proof2q','proof2name','proof2loc',
+    'cta-strip-h','cta-strip-p','cta-strip-btn',
+    'sec-pricing-label',
+    'price1-name','price1-from','price1-desc','price1-f1','price1-f2','price1-f3','price1-f4','price1-cta',
+    'price2-badge','price2-name','price2-from','price2-desc','price2-f1','price2-f2','price2-f3','price2-f4','price2-cta',
+    'price3-name','price3-from','price3-desc','price3-f1','price3-f2','price3-f3','price3-f4','price3-cta',
+    'pricing-note',
     'wl-sub','wl-count-text','footer-sub'];
 
   textIds.forEach(id => { const el=document.getElementById(id); if(el && s[id]) el.textContent=s[id]; });
